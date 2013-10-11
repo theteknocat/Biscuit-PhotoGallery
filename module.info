@@ -1,0 +1,3 @@
+name = "PhotoGallery"
+description = "Create and manage photo gallery albums"
+version = "2.2"

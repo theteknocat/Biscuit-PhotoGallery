@@ -1,35 +1,31 @@
 <?php
-	if (!$photo->is_new()) {
-		$submit_url = $PhotoGalleryManager->url('edit_photo',$photo->id());
-	}
-	else {
-		$submit_url = $PhotoGalleryManager->url('new_photo',$photo->album_id());
-	}
+$return_url = $PhotoGalleryManager->return_url();
+$album_url = $PhotoGalleryManager->url('show',$photo->album_id());
+if ($photo->is_new() || $return_url == $album_url) {
+	$cancel_url = $album_url;
+} else {
+	$cancel_url = $PhotoGalleryManager->url('show_photo',$photo->id());
+}
 ?>
-<form name="photo_editor" id="photo_editor" method="post" accept-charset="utf-8" action="<?php echo $submit_url?>" enctype="multipart/form-data">
-	<?php echo RequestTokens::render_token_field(); ?>
-	<input type="hidden" name="photo[album_id]" value="<?php echo $photo->album_id() ?>">
-	<p>
-		<?php echo FormField::text('title','photo[title]',$photo->title_label(),$photo->title(),$photo->title_is_required(),$photo->title_is_valid(),array('maxlength' => '255')); ?>
-	</p>
-	<p>
-		<?php echo FormField::textarea('description','photo[description]',$photo->description_label(),$photo->description(),'6',$photo->description_is_required(),$photo->description_is_valid(),array('cols' => '20')); ?>
-	</p>
-	<p>
-		<?php echo FormField::text('sort_order','photo[sort_order]',$photo->sort_order_label(),$photo->sort_order(),$photo->sort_order_is_required(),$photo->sort_order_is_valid(),array('size' => '4','maxlength' => '4')); ?>
-	</p>
-	<p>
-		<?php
-		$finfo = $photo->file_info('image');
-		echo FormField::file('image','photo[image]',$photo->image_label(),$finfo,$photo->image_is_required(),$photo->image_is_valid(),array('upload_rules' => 'You can upload JPEG, GIF and PNG images up to 5MB.'));
-		?>
-	</p>
-	<p class="controls">
-		<input type="submit" name="SubmitButton" id="SubmitButton" class="SubmitButton" value="Save">
-<?php
-	if (!$photo->is_new()) /* if not new */ {
-		?><a href="<?php echo $PhotoGalleryManager->url('delete_photo', $photo->id()); ?>" class="delete_photo" class="delete">Delete</a><?php
-	}
-	?></p>
-	<p><a href="<?php echo $PhotoGalleryManager->url('show_album',$album->id()); ?>">&larr; <?php echo $album->title()?></a></p>
-</form>
+<?php print Form::header($photo,'photo-edit-form'); ?>
+
+	<?php print ModelForm::hidden($photo, 'album_id'); ?>
+
+	<?php print ModelForm::hidden($photo, 'sort_order'); ?>
+
+	<?php print ModelForm::select($album_select_options, $photo, 'album_id'); ?>
+
+	<?php print ModelForm::text($photo, 'title'); ?>
+
+	<?php print ModelForm::textarea($photo, 'description'); ?>
+
+	<?php print ModelForm::file($photo, 'image', sprintf(__('Select a JPG, GIF or PNG image up to 5MB or %d megapixels in size.'), Image::megapixel_limit())); ?>
+
+	<?php print Form::footer($PhotoGalleryManager,$photo,(!$photo->is_new() && $PhotoGalleryManager->user_can_delete()),__('Save'),$cancel_url); ?>
+	
+<script type="text/javascript">
+	$('#photo-edit-form').submit(function(){
+		new Biscuit.Ajax.FormValidator('photo-edit-form');
+		return false;
+	});
+</script>

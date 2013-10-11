@@ -3,90 +3,69 @@
  * Photo model for basic photo gallery
  *
  * @package Modules
+ * @subpackage PhotoGallery
  * @author Peter Epp
+ * @version $Id: photo.php 13843 2011-07-27 19:45:49Z teknocat $
  */
-
 class Photo extends AbstractModel {
 	protected $_attributes_with_uploads = array('image');
 	/**
-	 * Validate a batch upload
+	 * Models this model belongs to
 	 *
-	 * @return bool
+	 * @var array
+	 */
+	protected $_belongs_to = array('Album');
+	/**
+	 * Validate user input
+	 *
+	 * @return void
 	 * @author Peter Epp
 	 */
-	public function validate_batch() {
-		$no_files = true;
-		if (Request::form('batch_image') != null && (is_array(Request::form('batch_image')) || Request::files('batch_image'))) {
-			// Grab the array of files from the form post with empty elements filtered out
-			$photo_files = array_values(array_filter(Request::form('batch_image')));
-			$no_files = empty($photo_files);
+	public function _set_attribute_defaults() {
+		if (!$this->sort_order() || $this->sort_order() == 0) {
+			$this->set_sort_order(ModelFactory::instance('Photo')->next_sort_order($this->album_id()));
 		}
-		if ($no_files) {
-			$this->set_error(null,"Please select at least one image file to upload");
-		}
-		$this->_has_been_validated(true);
-		return !$this->errors();
 	}
 	/**
-	 * Save a batch of uploaded photos
+	 * Return the upload path for image attribute with the album-id included
 	 *
-	 * @return bool Success
+	 * @param string $attribute 
+	 * @return string
 	 * @author Peter Epp
 	 */
-	public function batch_save() {
-		$upload_path = $this->upload_path('image');
-		Console::log("                        Saving batch upload...");
-		$this->set_batch_image('');
-		Console::log("                        Checking for uploaded file...");
-		$photo_files = Request::files('batch_image');
-		$warning = '';
-		if ($photo_files != null && is_array($photo_files['name'])) {
-			Console::log_var_dump('All submitted photo file uploads',$photo_files);
-			$uploaded_files = new MultiFileUpload($photo_files, $upload_path);
-			if ($uploaded_files->is_partially_okay()) {
-				// At least 1 file uploaded, processed okay
-				Console::log_var_dump('Successful batch upload photo filenames',$uploaded_files->file_names());
-				// Were there any failures?
-				if ($uploaded_files->failed_uploads() !== false) {
-					$warning = 'Some files did not upload and were therefore not added to the album:\n\n'.$uploaded_files->failure_list('\n');
-				}
-			} elseif ($uploaded_files->no_file_sent()) {
-				$this->set_error(null,"Please select at least one image file to upload");
-			} else {
-				$this->set_error(null,'None of the files uploaded and were therefore not added to the album:\n\n'.$uploaded_files->failure_list('\n'));
-			}
+	public function upload_path($attribute_name) {
+		if (!$this->album_id()) {
+			$backtrace = debug_backtrace();
+			Console::log("Call to photo upload path when there is no album ID!\n".print_r($backtrace[0],true));
 		}
-		else {
-			$this->set_error(null,"Please select at least one image file to upload");
-		}
-
-		if (!$this->errors()) {
-			Console::log('                        Saving data now...');
-			// Save the data:
-			foreach ($uploaded_files->files as $file) {
-				if ($file->is_okay()) {
-					$id = DB::insert("INSERT INTO `photos` SET `album_id` = ?, `image` = ?", array($this->album_id(), $file->file_name));
-				}
-			}
-			if (!empty($warning)) {
-				$this->set_error(null,$warning);
-			}
-		} else {
-			Console::log("                        Skipping DB save");
-		}
-		return (!$this->errors());
+		return parent::upload_path($attribute_name).'/album-'.$this->album_id();
 	}
-
-	public static function db_create_query() {
-		return 'CREATE TABLE  `photos` (
-		`id` INT( 8 ) NOT NULL AUTO_INCREMENT,
-		`album_id` INT( 8 ) NOT NULL,
-		`title` VARCHAR( 255 ) DEFAULT NULL ,
-		`description` TEXT DEFAULT NULL,
-		`sort_order` INT( 3 ) NULL DEFAULT NULL ,
-		`image` VARCHAR( 255 ) NOT NULL ,
-		PRIMARY KEY (`id`)
-		) TYPE = MyISAM';
+	/**
+	 * Make sure the friendly slug has an image file extension
+	 *
+	 * @return void
+	 * @author Peter Epp
+	 */
+	public function friendly_slug() {
+		$slug = parent::friendly_slug();
+		$extension = strtolower(substr($slug,-4));
+		if ($extension != '.jpg' && $extension != '.jpeg' && $extension != '.gif' && $extension != '.png') {
+			$extensions = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
+			$finfo = $this->image_info('image');
+			$slug .= '.'.$extensions[$finfo['type']];
+		}
+		return $slug;
+	}
+	/**
+	 * Which attribute to use for the friendly slug
+	 *
+	 * @return string
+	 * @author Peter Epp
+	 */
+	protected function slug_attribute() {
+		if (!$this->title()) {
+			return 'image';
+		}
+		return 'title';
 	}
 }
-?>

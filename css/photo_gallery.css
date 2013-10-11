@@ -1,0 +1,135 @@
+.gallery-item {
+	float: left;
+	padding: 4px 6.5px 10px;
+}
+.gallery-item .gallery-item-link {
+	text-align: center;
+	display: block;
+	font-size: 10px;
+	overflow: hidden;
+	padding: 3px 0;
+}
+.gallery-item .gallery-item-link.image {
+	border: 1px solid #000;
+	padding: 0 !important;
+}
+.gallery-item .gallery-item-link.text {
+	height: 30px;
+	width: 100%;
+	word-wrap: break-word;
+}
+.gallery-item .controls {
+	padding: 0 !important;
+	border: none !important;
+	background: none !important;
+	-moz-border-radius: 0 !important;
+	-webkit-border-radius: 0 !important;
+	border-radius: 0 !important;
+	margin: 0 0 3px !important;
+	width: 100%;
+}
+
+.gallery-item .controls a,
+.gallery-item .controls a:visited,
+.gallery-item .controls a:active,
+.gallery-item .controls a:focus {
+	float: right;
+	margin: 0 0 0 2px !important;
+	padding: 1px 7px 1px 8px !important;
+	text-indent: -3000em;
+	overflow: hidden;
+	-moz-box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+	box-shadow: none !important;
+}
+
+.gallery-item .controls .drag-handle {
+	float: left;
+	height: 16px;
+	padding: 1px 7px 1px 8px;
+	background: #bbb url(/framework/themes/sea_biscuit/images/jquery-ui/ui-bg_highlight-hard_100_bbbbbb_1x100.png) repeat-x 50% 50%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #888;
+	cursor: move;
+	display: none;
+	font-family: 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+	font-size: 10px;
+	text-shadow: 0 0 3px #fff;
+	text-align: center;
+	-moz-box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+	box-shadow: none !important;
+}
+.gallery-item .controls .drag-handle .ui-icon {
+	position: static !important;
+	margin: 0 auto !important;
+}
+.gallery-item .controls .drag-handle .ui-button-text {
+	padding: 0 !important;
+	display: none !important;
+}
+
+.gallery-item .controls .drag-handle:hover,
+.gallery-item .controls .drag-handle.ui-state-hover {
+	background: #bbb url(/framework/themes/sea_biscuit/images/jquery-ui/ui-bg_inset-hard_100_bbbbbb_1x100.png) 50% 50% repeat-x;
+}
+.large-image {
+	position: relative;
+	margin: 0 auto;
+}
+.large-image img {
+	-moz-box-shadow: 0 0 25px #000e2e;
+	-webkit-box-shadow: 0 0 25px #000e2e;
+	box-shadow: 0 0 25px #000e2e;
+	border: 1px solid #333;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+.large-image a,
+.large-image a:visited,
+.large-image a:active,
+.large-image a:focus {
+	display: block;
+}
+.large-image #photo-description {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	padding: 20px 0;
+	margin: 1px;
+	background: #eee;
+	background: rgba(255, 255, 255, 0.8);
+	color: #000;
+	display: none;
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+.large-image #photo-description p {
+	padding: 0 20px;
+}
+#photo-gallery-content {
+	padding: 0;
+}
+#photo-gallery-content.individual-photo {
+	position: relative;
+	padding: 30px 0 !important;
+}
+#photo-gallery-content.no-items {
+	height: 120px;
+}
+#photo-gallery-content .none-found {
+	padding: 40px 0;
+}
+.controls.photo-show-controls span.admin {
+	width: 100% !important;
+	margin: 0 !important;
+	left: 0 !important;
+	text-align: center !important;
+}
